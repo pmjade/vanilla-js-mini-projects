@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🖤 Poetic Quote Generator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Julius+Sans+One&family=IM+Fell+English+SC&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: url('https://images7.alphacoders.com/135/1350454.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'IM Fell English SC', serif;
+      color: #fff;
+      text-align: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    h1 {
+      font-family: 'UnifrakturCook', cursive;
+      font-size: 3em;
+      margin-bottom: 20px;
+      color: #cfcfcf;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      user-select: none;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 600px;
+      height: 100px;
+      font-size: 1.2em;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-family: 'Julius Sans One', sans-serif;
+      resize: none;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      margin: 10px 5px;
+      cursor: pointer;
+      background: #9400d3;
+      color: white;
+      text-shadow: 0 0 5px #fff;
+      box-shadow: 0 0 15px #9400d3, 0 0 40px #9400d3;
+      transition: 0.3s ease;
+      user-select: none;
+    }
+
+    button:hover {
+      background: #6a0dad;
+      box-shadow: 0 0 25px #6a0dad, 0 0 60px #6a0dad;
+    }
+
+    canvas {
+      margin-top: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+      max-width: 100%;
+      display: none;
+      image-rendering: crisp-edges;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #ccc;
+      user-select: none;
+    }
+
+    footer a {
+      color: #ccc;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🕯️ Aesthetic Quote Generator</h1>
+  <textarea id="quoteInput" placeholder="Write your poetic sadness..."></textarea><br/>
+  <button onclick="generateQuote()">Generate Quote</button>
+  <button onclick="downloadQuote()">Download</button>
+  <br/>
+  <canvas id="quoteCanvas" width="720" height="1080"></canvas>
+
+  <footer>
+    <p>Made with melancholy by <a href="mailto:jadehistorian@gmail.com">jadehistorian@gmail.com</a></p>
+  </footer>
+
+  <script>
+    const images = [
+      "https://i.pinimg.com/736x/fa/3b/3e/fa3b3ee736ea39d66bab5e88b7bddf7f.jpg",
+      "https://i.pinimg.com/736x/25/f4/3c/25f43c78bd96097f74439e456aa19391.jpg",
+      "https://i.pinimg.com/736x/d2/28/f5/d228f5b2d8cba7ea7f4a5d561e716175.jpg",
+      "https://i.pinimg.com/736x/b1/19/2f/b1192f3c50d9294977ceac2bcc3b372a.jpg",
+      "https://i.pinimg.com/736x/5a/2e/84/5a2e84d65e9bf29d1eeba0a7edd79b6f.jpg",
+      "https://i.pinimg.com/736x/af/d5/ec/afd5ec70715e5c32a87bf4b6ff7534dd.jpg",
+      "https://i.pinimg.com/736x/41/cc/ac/41ccaca297ca3825cd1f2743359415f9.jpg",
+      "https://i.pinimg.com/736x/e4/fb/e9/e4fbe9dabbc243135b93ba51565fb10d.jpg",
+      "https://i.pinimg.com/736x/e6/9f/3c/e69f3c0a4b49ede12b38462e996f7f78.jpg",
+      "https://i.pinimg.com/736x/2c/2a/1a/2c2a1ab2c1332f0329a7c30675f3e2f4.jpg",
+      "https://i.pinimg.com/736x/78/36/fa/7836fa81bb20f1485134cccb0bb629d9.jpg",
+      "https://i.pinimg.com/736x/88/41/79/884179968ac3a009a2df453ea3fd4c8d.jpg",
+      "https://i.pinimg.com/736x/51/d7/f3/51d7f35e786f2c09d11dd8078eafba33.jpg",
+      "https://i.pinimg.com/736x/02/23/6c/02236ce6a4f2deb45027b14ac284ac26.jpg"
+    ];
+
+    async function generateQuote() {
+      const quote = document.getElementById('quoteInput').value.trim();
+      if (!quote) return alert("Bro, write something deep first 😭");
+
+      const canvas = document.getElementById('quoteCanvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+
+      const selectedImg = images[Math.floor(Math.random() * images.length)];
+      // Use a CORS proxy for images if needed:
+      img.src = "https://corsproxy.io/?" + selectedImg;
+
+      img.onload = async () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        await document.fonts.ready;
+
+        // Text style with glowing effect
+        ctx.font = "28px 'IM Fell English SC'";
+        ctx.textAlign = "center";
+
+        // Draw glow effect by layering shadows
+        ctx.fillStyle = "#fff";
+        ctx.shadowColor = "yellow";
+        ctx.shadowBlur = 15;
+        
+        const lines = wrapText(ctx, quote, 700);
+        const lineHeight = 42;
+        const startY = canvas.height / 2 - (lines.length * lineHeight) / 2;
+
+        lines.forEach((line, i) => {
+          // Draw glow text shadow
+          ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+        });
+
+        // Draw a white text layer on top for crispness
+        ctx.shadowColor = "transparent";
+        ctx.fillStyle = "white";
+        lines.forEach((line, i) => {
+          ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+        });
+
+        canvas.style.display = 'block';
+      };
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const words = text.split(" ");
+      const lines = [];
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + " " + word).width;
+        if (width < maxWidth) {
+          currentLine += " " + word;
+        } else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+      return lines;
+    }
+
+    function downloadQuote() {
+      const canvas = document.getElementById('quoteCanvas');
+      if (canvas.style.display === 'none') {
+        return alert("First generate a quote, bro 😭");
+      }
+      const link = document.createElement('a');
+      link.download = 'aesthetic-quote.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>
+
